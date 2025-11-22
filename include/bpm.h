@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-void detecterBPM(int valeur);
+int detecterBPM(int valeur);
 int getBPMCount();
 float getMeanBPM();
 void resetBPM();

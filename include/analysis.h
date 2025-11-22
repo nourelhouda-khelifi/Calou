@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
-void analyserStress();
+const char* analyserStress(); 
+void resetAnalyse();
 
 #endif
