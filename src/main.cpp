@@ -1,53 +1,70 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <SeeedOLED.h>
+
 #include "sensor.h"
 #include "bpm.h"
 #include "analysis.h"
-#include "display.h"   // <= AJOUT POUR L’ÉCRAN
+#include "display_accueil.h"
+#include "display_alerte.h"
+#include "display_exercice.h"
+#include "display_resultat.h"
 
 unsigned long startWindow = 0;
+bool affichageAccueil = false;
 
 void setup() {
     Serial.begin(9600);
-    
-    // --- INIT ECRAN OLED ---
-    displayInit();
-    displayClear();
-    displayShowState("Init...");
-    
-    Serial.println("=== KY039 ANALYSE 30s ===");
+    Wire.begin();
+    SeeedOled.init();
+    SeeedOled.clearDisplay();
+    SeeedOled.setNormalDisplay();
+    SeeedOled.setPageMode();
 
+    displayAccueil();
     startWindow = millis();
 }
 
 void loop() {
     int valeur = lireCapteur();
 
-    // --- Vérifier la présence du doigt ---
-    if (!doigtPresent(valeur)) {
-        Serial.println("Pas de doigt");
+    if(!doigtPresent(valeur)) {
+        if(!affichageAccueil){
+            displayAccueil();
+            affichageAccueil = true;
+        }
         return;
+    } else {
+        affichageAccueil = false;
     }
 
-    // --- Calcul BPM ---
     int bpm = detecterBPM(valeur);
     (void)bpm;
 
-    
-
-    // --- Analyse fenêtre 30s ---
-    if (millis() - startWindow >= 30000) {
+    if(millis() - startWindow >= 30000){
         const char* etat = analyserStress();
-        
-        float moyenne = getMeanBPM();          // moyenne des BPM sur la fenêtre
+        float moyenne = getMeanBPM();
 
-        // Affichage OLED du résultat (moyenne + état)
-        displayShowResult(moyenne, etat);
+        if(strcmp(etat,"STRESS") == 0){
+            displayAlerte();
+            delay(2000); // pause 2s
 
-        // Affichage console pour debug
-        Serial.print("Moyenne BPM: "); Serial.println(moyenne);
-        Serial.print("Etat: "); Serial.println(etat);
+            // Exercice respiratoire : 5 cycles
+            for(int i=1;i<=5;i++){
+                displayExercice(i,true);  // inspiration 4s
+                delay(4000);
+                displayExercice(i,false); // expiration 6s
+                delay(6000);
+            }
 
-        // Réinitialisation de la fenêtre
+            // Ecran félicitations
+            displayResult(moyenne,"Calme :)");
+            delay(3000);
+        } else {
+            displayResult(moyenne,etat);
+            delay(3000);
+        }
+
         startWindow = millis();
     }
 
