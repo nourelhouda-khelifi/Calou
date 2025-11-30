@@ -1,4 +1,4 @@
-#include "bpm.h"
+#include "../include/bpm.h"
 
 const int seuil_pic = 20;
 const int bpm_min = 50;

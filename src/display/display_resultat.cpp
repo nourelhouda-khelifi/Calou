@@ -1,5 +1,5 @@
 #include <SeeedOLED.h>
-#include "display_resultat.h"
+#include "../../include/display_resultat.h"
 
 void displayResult(float moyenne, const char* etat) {
     SeeedOled.clearDisplay();

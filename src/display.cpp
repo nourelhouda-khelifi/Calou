@@ -1,6 +1,6 @@
 #include <SeeedOLED.h>
 #include <Wire.h>
-#include "display.h"
+#include "../include/display.h"
 
 void displayInit() {
     Wire.begin();

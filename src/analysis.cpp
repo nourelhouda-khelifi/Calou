@@ -1,5 +1,5 @@
-#include "analysis.h"
-#include "bpm.h"
+#include "../include/analysis.h"
+#include "../include/bpm.h"
 #include <Arduino.h>
 
 const char* analyserStress() {

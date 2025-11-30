@@ -2,13 +2,18 @@
 #include <Wire.h>
 #include <SeeedOLED.h>
 
-#include "sensor.h"
-#include "bpm.h"
-#include "analysis.h"
-#include "display_accueil.h"
-#include "display_alerte.h"
-#include "display_exercice.h"
-#include "display_resultat.h"
+#include "../include/sensor.h"
+#include "../include/bpm.h"
+#include "../include/analysis.h"
+#include "../include/display_accueil.h"
+#include "../include/display_alerte.h"
+#include "../include/display_exercice.h"
+#include "../include/display_resultat.h"
+#include "../include/sophro_exercices.h"
+
+// Forward declaration au cas où
+void afficher_countdown();
+void exercice_sophro_normal();
 
 unsigned long startWindow = 0;
 bool affichageAccueil = false;
@@ -46,18 +51,13 @@ void loop() {
         float moyenne = getMeanBPM();
 
         if(strcmp(etat,"STRESS") == 0){
-            displayAlerte();
-            delay(2000); // pause 2s
-
-            // Exercice respiratoire : 5 cycles
-            for(int i=1;i<=5;i++){
-                displayExercice(i,true);  // inspiration 4s
-                delay(4000);
-                displayExercice(i,false); // expiration 6s
-                delay(6000);
-            }
-
-            // Ecran félicitations
+            // Afficher countdown 3-2-1
+            afficher_countdown();
+            
+            // Exercice sophro avec bulle animée
+            exercice_sophro_normal();
+            
+            // Écran de résultat final
             displayResult(moyenne,"Calme :)");
             delay(3000);
         } else {

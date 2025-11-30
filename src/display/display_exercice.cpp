@@ -1,5 +1,5 @@
 #include <SeeedOLED.h>
-#include "display_exercice.h"
+#include "../../include/display_exercice.h"
 
 void displayExercice(int cycle, bool inspirer) {
     SeeedOled.clearDisplay();

@@ -1,5 +1,5 @@
 #include <SeeedOLED.h>
-#include "display_alerte.h"
+#include "../../include/display_alerte.h"
 
 void displayAlerte() {
     SeeedOled.clearDisplay();

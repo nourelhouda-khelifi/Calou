@@ -1,4 +1,4 @@
-#include "sensor.h"
+#include "../include/sensor.h"
 
 const int seuil_doigt = 30;
 
