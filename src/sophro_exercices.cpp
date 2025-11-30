@@ -1,6 +1,18 @@
 #include "sophro_exercices.h"
 #include "bitmap.h"
 
+// Forward declarations for functions used before their definitions
+void exercice_sophro_normal();
+void commencer_affichage();
+void premier_cycle();
+void deuxieme_cycle();
+void troisieme_cycle();
+void quatrieme_cycle();
+void cinquieme_cycle();
+void inspirer_cycle();
+void tenir_cycle(int nb_ms);
+void expirer_cycle();
+
 void exercice_sophro_normal(){
     premier_cycle();
     deuxieme_cycle();
@@ -49,48 +61,81 @@ void cinquieme_cycle(){
 }
 
 
-void inspirer_cycle(){
+
+void inspirer_cycle() {
+    static const unsigned char* const frames[] = {
+        ballon_etat1,
+        ballon_etat2,
+        ballon_etat3,
+        ballon_etat4,
+        ballon_etat5,
+        ballon_etat6
+    };
+
+    // 6 delays of 500 ms
+    const uint16_t frameDelay[6] = {500, 500, 500, 500, 500, 500};
+
+    const uint8_t frameCount = sizeof(frames) / sizeof(frames[0]);
+
     commencer_affichage();
 
+    SeeedOled.setTextXY(7, 5);
     SeeedOled.putString("Inspire");
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat1, TAILLE_BITMAP);
-    delay(500);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat2, TAILLE_BITMAP);
-    delay(500);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat3, TAILLE_BITMAP);
-    delay(500);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat4, TAILLE_BITMAP);
-    delay(500);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat5, TAILLE_BITMAP);
-    delay(500);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat6, TAILLE_BITMAP);
-    delay(500);
-    //Trois secondes d'inspiration
+
+    for (uint8_t i = 0; i < frameCount; i++) {
+        SeeedOled.setTextXY(0, 0);
+        SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP);
+        SeeedOled.setTextXY(7, 5);
+        SeeedOled.putString("Inspire");
+
+        delay(frameDelay[i]);   
+    }
 }
+
 
 void tenir_cycle(int nb_ms){
     commencer_affichage();
-
-    SeeedOled.putString("Tiens la respiration");
+    SeeedOled.setTextXY(0, 0);
     SeeedOled.drawBitmap((unsigned char*) ballon_etat7, TAILLE_BITMAP);
+    SeeedOled.setTextXY(7, 5);
+    SeeedOled.putString("Tiens");
     delay(nb_ms);
 }
 
-void expirer_cycle(){
+void expirer_cycle() {
+    static const unsigned char* const frames[] = {
+        ballon_etat6,
+        ballon_etat5,
+        ballon_etat4,
+        ballon_etat3,
+        ballon_etat2,
+        ballon_etat1
+    };
+
+    const uint8_t frameCount = sizeof(frames) / sizeof(frames[0]);
+
+    // Per-frame delays (ms)
+    const uint16_t frameDelay[6] = {1000, 1000, 1000, 1000, 1000, 1000};
+
     commencer_affichage();
-    SeeedOled.putString("Souffle doucement");
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat6, TAILLE_BITMAP);
-    delay(1000);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat5, TAILLE_BITMAP);
-    delay(1000);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat4, TAILLE_BITMAP);
-    delay(1000);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat3, TAILLE_BITMAP);    
-    delay(1000);
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat2, TAILLE_BITMAP);
-    delay(1000);
+
+    SeeedOled.setTextXY(7, 5);
+    SeeedOled.putString("Souffle");
+
+
+    for (uint8_t i = 0; i < frameCount; i++) {
+        SeeedOled.setTextXY(0, 0);
+        SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP);
+        SeeedOled.setTextXY(7, 5);
+        SeeedOled.putString("Souffle");
+
+        delay(frameDelay[i]);
+    }
+
     commencer_affichage();
+    SeeedOled.setTextXY(0, 0);
+    SeeedOled.drawBitmap((unsigned char*)ballon_etat1, TAILLE_BITMAP);
+    SeeedOled.setTextXY(7, 5);
     SeeedOled.putString("Bravo!");
-    SeeedOled.drawBitmap((unsigned char*) ballon_etat1, TAILLE_BITMAP);
     delay(2000);
 }

@@ -8,5 +8,9 @@ void deuxieme_cycle();
 void troisieme_cycle();
 void quatrieme_cycle();
 void cinquieme_cycle();
+void inspirer_cycle();
+void expirer_cycle();
+void tenir_cycle(int nb_ms);
+void commencer_affichage();
 
 #endif 
