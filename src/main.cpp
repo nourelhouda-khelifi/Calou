@@ -8,7 +8,6 @@
 #include "../include/display_accueil.h"
 #include "../include/display_alerte.h"
 #include "../include/display_exercice.h"
-#include "../include/display_resultat.h"
 #include "../include/sophro_exercices.h"
 
 // Forward declaration au cas où
@@ -48,7 +47,6 @@ void loop() {
 
     if(millis() - startWindow >= 30000){
         const char* etat = analyserStress();
-        float moyenne = getMeanBPM();
 
         if(strcmp(etat,"STRESS") == 0){
             // Afficher countdown 3-2-1
@@ -57,13 +55,11 @@ void loop() {
             // Exercice sophro avec bulle animée
             exercice_sophro_normal();
             
-            // Écran de résultat final
-            displayResult(moyenne,"Calme :)");
-            delay(3000);
-        } else {
-            displayResult(moyenne,etat);
-            delay(3000);
+            // Retour à l'écran d'accueil
+            displayAccueil();
+            affichageAccueil = true;
         }
+        // Si état calme : ne rien afficher (garder l'écran d'accueil)
 
         startWindow = millis();
     }

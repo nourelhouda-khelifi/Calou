@@ -3,63 +3,90 @@
 #include <Arduino.h>
 
 // ========================================
-// Écran d'accueil moderne et animé
+// Écran d'accueil pour bracelet anti-stress
+// Design ludique, rassurant et enfantin
 // ========================================
+
+// Icône Cœur (8x8)
+const unsigned char heart_icon[] = {
+  0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x7E, 0x3C, 0x18
+};
+
+// Icône Étoile (8x8)
+const unsigned char star_icon[] = {
+  0x18, 0x3C, 0x7E, 0xFF, 0xFF, 0x7E, 0x3C, 0x18
+};
+
+// Icône Nuage (8x8)
+const unsigned char cloud_icon[] = {
+  0x00, 0x38, 0x7C, 0xFE, 0xFE, 0x7C, 0x38, 0x00
+};
+
 void displayAccueil() {
     static unsigned long lastAnimTime = 0;
     static int animStep = 0;
     
     unsigned long currentTime = millis();
     
-    // Animation toutes les 600ms
-    if(currentTime - lastAnimTime >= 600) {
+    // Animation toutes les 800ms pour un effet relaxant
+    if(currentTime - lastAnimTime >= 800) {
         lastAnimTime = currentTime;
         animStep = (animStep + 1) % 4;
     }
     
     SeeedOled.clearDisplay();
     
-    // ========== LIGNE 1 : Titre avec décoration ==========
+    // ========== LIGNE 0 : En-tête avec décoration ==========
     SeeedOled.setTextXY(0, 0);
-    SeeedOled.putString("  << CALOU >>");
     
-    // ========== LIGNE 2 : Barre de séparation animée ==========
+    // Afficher icônes décoratives selon animation
+    if(animStep == 0) {
+        SeeedOled.putString("* CALOU *");
+    } else if(animStep == 1) {
+        SeeedOled.putString("~ CALOU ~");
+    } else if(animStep == 2) {
+        SeeedOled.putString("o CALOU o");
+    } else {
+        SeeedOled.putString("+ CALOU +");
+    }
+    
+    // ========== LIGNE 1 : Ligne séparatrice ==========
     SeeedOled.setTextXY(1, 0);
-    const char* barres[] = {
-        "~~~~~~~~~~~~~~~~",
-        "================",
-        "~~~~~~~~~~~~~~~~",
-        "~~~~~~~~~~~~~~~~"
-    };
-    SeeedOled.putString(barres[animStep]);
+    SeeedOled.putString("================");
     
-    // ========== LIGNE 3 : Vide ==========
+    // ========== LIGNE 2 : Vide ==========
     SeeedOled.setTextXY(2, 0);
     SeeedOled.putString("                ");
     
-    // ========== LIGNE 4 : Message principal ==========
+    // ========== LIGNE 3 : Message d'accueil chaleureux ==========
     SeeedOled.setTextXY(3, 1);
-    SeeedOled.putString("Detente & Bien-etre");
+    SeeedOled.putString("Bonjour! :)");
     
-    // ========== LIGNE 5 : Sous-message ==========
+    // ========== LIGNE 4 : Message rassurant ==========
     SeeedOled.setTextXY(4, 3);
-    SeeedOled.putString("Mets ton doigt!");
+    SeeedOled.putString("Je suis la");
     
-    // ========== LIGNE 6 : Vide ==========
-    SeeedOled.setTextXY(5, 0);
-    SeeedOled.putString("                ");
+    // ========== LIGNE 5 : Mascotte animée (cœur qui pulse) ==========
+    SeeedOled.setTextXY(5, 5);
+    if(animStep < 2) {
+        SeeedOled.putString("<3 <3");
+    } else {
+        SeeedOled.putString(">< ><");
+    }
     
-    // ========== LIGNE 7 : Animation de pulse ==========
-    SeeedOled.setTextXY(6, 4);
-    const char* pulses[] = {
-        "   o   ",
-        "  o o  ",
-        " o   o ",
-        "  o o  "
-    };
-    SeeedOled.putString(pulses[animStep]);
+    // ========== LIGNE 6 : Instruction claire ==========
+    SeeedOled.setTextXY(6, 2);
+    SeeedOled.putString("Pose ton doigt");
     
-    // ========== LIGNE 8 : Footer avec chevrons ==========
+    // ========== LIGNE 7 : Pied de page avec animation ==========
     SeeedOled.setTextXY(7, 1);
-    SeeedOled.putString(">>> en attente <<<");
+    if(animStep == 0) {
+        SeeedOled.putString(". . . . .");
+    } else if(animStep == 1) {
+        SeeedOled.putString("  . . .  ");
+    } else if(animStep == 2) {
+        SeeedOled.putString(". . . . .");
+    } else {
+        SeeedOled.putString("  . . .  ");
+    }
 }
