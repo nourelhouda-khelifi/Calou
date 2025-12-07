@@ -1,5 +1,6 @@
 #include "../include/sensor.h"
-
+#include <SeeedOLED.h>
+#include "../include/calou_active.h"
 const int seuil_doigt = 30;
 
 // Filtre médian 5 mesures

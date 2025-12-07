@@ -4,16 +4,13 @@
 #include <Wire.h>
 #include <SeeedOLED.h>
 
-void exercice_sophro_normal();
-void premier_cycle();
-void deuxieme_cycle();
-void troisieme_cycle();
-void quatrieme_cycle();
-void cinquieme_cycle();
-void inspirer_cycle();
-void tenir_cycle(int nb_ms);
-void expirer_cycle();
+bool exercice_sophro_normal();
+bool inspirer_cycle();
+bool tenir_cycle(int nb_ms);
+bool expirer_cycle();
 void commencer_affichage();
 void afficher_countdown();
+bool verifierActivation();
+bool cycle(int tenir_secondes);
 
 #endif

@@ -1,8 +1,17 @@
 #include "../include/analysis.h"
 #include "../include/bpm.h"
 #include <Arduino.h>
+#include "../include/display_accueil.h"
+#include "../include/calou_active.h"
+#include <SeeedOLED.h>
 
 const char* analyserStress() {
+    updateActivateBouton();
+    if(!activationOn){
+        SeeedOled.clearDisplay();
+        displaydeactivate();
+        return;
+    }
     float moyenne = getMeanBPM();
 
     Serial.print("Moyenne BPM sur 30s : ");

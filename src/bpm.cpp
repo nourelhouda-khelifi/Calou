@@ -1,4 +1,9 @@
 #include "../include/bpm.h"
+#include "../include/display_accueil.h"
+#include "../include/calou_active.h"
+#include <Arduino.h>
+#include <SeeedOLED.h>
+
 
 const int seuil_pic = 20;
 const int bpm_min = 50;
@@ -12,7 +17,12 @@ int bpm_index = 0;
 
 // 🔥 VERSION CORRIGÉE : detecterBPM retourne maintenant un int
 int detecterBPM(int valeur) {
-
+    updateActivateBouton();
+    if(!activationOn){
+        SeeedOled.clearDisplay();
+        displaydeactivate();
+        return;
+    }
     baseline = baseline * 0.9 + valeur * 0.1; // filtrage baseline
 
     if (valeur > baseline + seuil_pic) {

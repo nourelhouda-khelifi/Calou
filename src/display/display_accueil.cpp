@@ -1,26 +1,13 @@
 #include <SeeedOLED.h>
 #include "../../include/display_accueil.h"
 #include <Arduino.h>
+#include "../../include/calou_active.h"
 
 // ========================================
 // Écran d'accueil pour bracelet anti-stress
 // Design ludique, rassurant et enfantin
 // ========================================
-
-// Icône Cœur (8x8)
-const unsigned char heart_icon[] = {
-  0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x7E, 0x3C, 0x18
-};
-
-// Icône Étoile (8x8)
-const unsigned char star_icon[] = {
-  0x18, 0x3C, 0x7E, 0xFF, 0xFF, 0x7E, 0x3C, 0x18
-};
-
-// Icône Nuage (8x8)
-const unsigned char cloud_icon[] = {
-  0x00, 0x38, 0x7C, 0xFE, 0xFE, 0x7C, 0x38, 0x00
-};
+int currentDisplayState = 0;
 
 void displayAccueil() {
     static unsigned long lastAnimTime = 0;
@@ -33,8 +20,6 @@ void displayAccueil() {
         lastAnimTime = currentTime;
         animStep = (animStep + 1) % 4;
     }
-    
-    SeeedOled.clearDisplay();
     
     // ========== LIGNE 0 : En-tête avec décoration ==========
     SeeedOled.setTextXY(0, 0);
@@ -89,4 +74,29 @@ void displayAccueil() {
     } else {
         SeeedOled.putString("  . . .  ");
     }
+}
+void displayactivate(){
+    // Check if this is the first time in this state since the last clear
+    if (currentDisplayState == 1) { 
+        SeeedOled.setTextXY(2, 0);
+        SeeedOled.putString("Display Activate");
+        // We do *not* set a static flag here, the global currentDisplayState handles it.
+    }
+    
+    // This line updates continuously, regardless of the state change
+    SeeedOled.setTextXY(3, 0);
+    const char* stateString = activationOn ? "ON" : "OFF";
+    SeeedOled.putString(stateString); 
+}
+void displaydeactivate(){
+    // Check if this is the first time in this state since the last clear
+    if (currentDisplayState == 2) { 
+        SeeedOled.setTextXY(2, 0);
+        SeeedOled.putString("Dis Deactivate");
+    }
+    
+    // This line updates continuously, regardless of the state change
+    SeeedOled.setTextXY(3, 0);
+    const char* stateString = activationOn ? "ON" : "OFF";
+    SeeedOled.putString(stateString);
 }

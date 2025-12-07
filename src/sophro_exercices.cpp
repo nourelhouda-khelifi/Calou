@@ -1,13 +1,17 @@
 #include "../include/sophro_exercices.h"
 #include "../include/bitmap.h"
+#include "../include/display_accueil.h"
+#include "../include/calou_active.h"
 #include <Arduino.h>
 #include <SeeedOLED.h>
 #include <Wire.h>
 
 // Forward declarations
-void inspirer_cycle();
-void tenir_cycle(int nb_ms);
-void expirer_cycle();
+bool inspirer_cycle();
+bool tenir_cycle(int nb_ms);
+bool expirer_cycle();
+bool verifierActivation();
+bool cycle(int tenir_secondes);
 
 // ========================================
 // Affichage initial
@@ -29,9 +33,15 @@ void afficher_countdown() {
     SeeedOled.putString("EXERCICE");
     SeeedOled.setTextXY(2, 3);
     SeeedOled.putString("SORPHO");
+    if(!verifierActivation()){
+        return;
+    }
     
     // Affichage du compte à rebours 3-2-1
     for(int i = 3; i >= 1; i--) {
+        if(!verifierActivation()){
+            return;
+        }
         commencer_affichage();
         
         SeeedOled.setTextXY(1, 2);
@@ -55,51 +65,36 @@ void afficher_countdown() {
 // ========================================
 // Exercice Sorpho Normal
 // ========================================
-void exercice_sophro_normal() {
-    premier_cycle();
-    deuxieme_cycle();
-    troisieme_cycle();
-    quatrieme_cycle();
-    cinquieme_cycle();
+bool exercice_sophro_normal() {
+    int tenir_secondes = 1000;
+    for(int i = 0; i < 5; i++){
+        if(!cycle(tenir_secondes)){
+            return false;
+        }
+        if(i!=3){
+            tenir_secondes+=1000;
+        }
+    }
+    return true;
 }
 
 // ========================================
 // 5 cycles avec durées croissantes
 // ========================================
-void premier_cycle() {
-    inspirer_cycle();
-    tenir_cycle(1000);
-    expirer_cycle();
+
+bool cycle(int tenir_secondes){
+    if (inspirer_cycle() && tenir_cycle(tenir_secondes) && expirer_cycle()) {
+        return true; 
+    } else {
+        return false; 
+    }
 }
 
-void deuxieme_cycle() {
-    inspirer_cycle();
-    tenir_cycle(2000);
-    expirer_cycle();
-}
-
-void troisieme_cycle() {
-    inspirer_cycle();
-    tenir_cycle(3000);
-    expirer_cycle();
-}
-
-void quatrieme_cycle() {
-    inspirer_cycle();
-    tenir_cycle(3000);
-    expirer_cycle();
-}
-
-void cinquieme_cycle() {
-    inspirer_cycle();
-    tenir_cycle(4000);
-    expirer_cycle();
-}
 
 // ========================================
 // Inspiration - Bulle grandit progressivement
 // ========================================
-void inspirer_cycle() {
+bool inspirer_cycle() {
     static const unsigned char* const frames[] = {
         ballon_etat1,
         ballon_etat2,
@@ -117,30 +112,38 @@ void inspirer_cycle() {
     SeeedOled.putString("Inspire");
 
     for (uint8_t i = 0; i < frameCount; i++) {
+        if(!verifierActivation()){
+            return false;
+        }
         SeeedOled.setTextXY(0, 0);
         SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP);
         SeeedOled.setTextXY(7, 5);
         SeeedOled.putString("Inspire");
         delay(frameDelay[i]);
     }
+    return true;
 }
 
 // ========================================
 // Pause avec bulle au maximum
 // ========================================
-void tenir_cycle(int nb_ms) {
+bool tenir_cycle(int nb_ms) {
     commencer_affichage();
     SeeedOled.setTextXY(0, 0);
     SeeedOled.drawBitmap((unsigned char*)ballon_etat7, TAILLE_BITMAP);
     SeeedOled.setTextXY(7, 5);
     SeeedOled.putString("Tiens");
+    if(!verifierActivation()){
+        return false;
+    }
     delay(nb_ms);
+    return true;
 }
 
 // ========================================
 // Expiration - Bulle rétrécit progressivement
 // ========================================
-void expirer_cycle() {
+bool expirer_cycle() {
     static const unsigned char* const frames[] = {
         ballon_etat6,
         ballon_etat5,
@@ -158,6 +161,9 @@ void expirer_cycle() {
     SeeedOled.putString("Souffle");
 
     for (uint8_t i = 0; i < frameCount; i++) {
+        if(!verifierActivation()){
+            return false;
+        }
         SeeedOled.setTextXY(0, 0);
         SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP);
         SeeedOled.setTextXY(7, 5);
@@ -172,4 +178,14 @@ void expirer_cycle() {
     SeeedOled.setTextXY(7, 5);
     SeeedOled.putString("Bravo!");
     delay(2000);
+    return true;
+}
+
+bool verifierActivation(){
+    updateActivateBouton();
+    if(!activationOn){
+        SeeedOled.clearDisplay();
+        displaydeactivate();
+    }
+    return activationOn;
 }
