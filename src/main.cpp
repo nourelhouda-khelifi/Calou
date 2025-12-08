@@ -30,6 +30,7 @@ void setup() {
     SeeedOled.setPageMode();
     startWindow = millis();
     activationOn = false;
+    sportOn = false;
 }
 
 // Assurez-vous que ces variables sont globales/externes et définies.
@@ -56,10 +57,26 @@ void loop() {
             currentDisplayState = 1; 
             // Lors de l'activation, on s'attend à être sur l'écran d'accueil du capteur.
             affichageAccueil = true; 
-        }
-        
+        }        
         // Mettre à jour la ligne d'état de l'écran ACTIF
         displayactivate(); 
+
+        if(sportOn){
+            if(currentSportState!=1){
+                SeeedOled.clearDisplay();
+                currentSportState = 1; 
+            }
+            displaySport();
+            return;
+        } else {
+
+            if (currentSportState != 2) {
+                SeeedOled.clearDisplay();
+                currentSportState = 2; 
+            }
+            displayNotSport();
+        }
+
 
         // 3. LOGIQUE DU CAPTEUR ET DÉTECTION DE STRESS
         int valeur = lireCapteur();

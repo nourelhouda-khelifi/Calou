@@ -9,6 +9,8 @@
 // ========================================
 int currentDisplayState = 0;
 
+int currentSportState = 0;
+
 void displayAccueil() {
     static unsigned long lastAnimTime = 0;
     static int animStep = 0;
@@ -99,4 +101,32 @@ void displaydeactivate(){
     SeeedOled.setTextXY(3, 0);
     const char* stateString = activationOn ? "ON" : "OFF";
     SeeedOled.putString(stateString);
+}
+
+void displaySport(){
+    // Check if this is the first time in this state since the last clear
+    if (currentSportState == 1) { 
+        SeeedOled.setTextXY(0, 0);
+        SeeedOled.putString("MODE SPORT");
+        // We do *not* set a static flag here, the global currentDisplayState handles it.
+    }
+    
+    // This line updates continuously, regardless of the state change
+    SeeedOled.setTextXY(1, 0);
+    const char* stateString = sportOn ? "ON" : "OFF";
+    SeeedOled.putString(stateString); 
+}
+
+void displayNotSport(){
+    // Check if this is the first time in this state since the last clear
+    if (currentSportState == 2) { 
+        SeeedOled.setTextXY(5, 0);
+        SeeedOled.putString("NOT SPORT");
+        // We do *not* set a static flag here, the global currentDisplayState handles it.
+    }
+    
+    // This line updates continuously, regardless of the state change
+    SeeedOled.setTextXY(6, 0);
+    const char* stateString = sportOn ? "ON" : "OFF";
+    SeeedOled.putString(stateString); 
 }

@@ -6,19 +6,23 @@
 #include "../include/display_alerte.h"
 #include "../include/display_exercice.h"
 #include "../include/sophro_exercices.h"
+const int buttonPin = 12;        
+const int sportPin = 13;  
 
-
-const int buttonPin = 12;        // The pin the button is connected to
-const int sportPin = 13;          // An output pin to show the result
-
-int buttonState = HIGH;
-int lastButtonState = HIGH;
-unsigned long lastDebounceTime = 0;
 const unsigned long debounceDelay = 50;
 const unsigned long LONG_PRESS_DURATION = 3000;
-unsigned long pressStartTime; 
+unsigned long lastDebounceTimeActive = 0;
+unsigned long pressStartTimeActive; 
+int buttonActiveState = HIGH;
+int lastButtonActiveState = HIGH;
+
+unsigned long lastDebounceTimeSport = 0;
+unsigned long pressStartTimeSport; 
+int buttonSportState = HIGH;
+int lastButtonSportState = HIGH;
 
 bool activationOn = false;  
+bool sportOn = false;
 
 /**
  * @brief Reads a button, debounces it, and registers a press only if held for 3 seconds.
@@ -26,43 +30,68 @@ bool activationOn = false;
  */
 bool updateActivateBouton() {
     bool stateChanged = false;
-    int reading = digitalRead(buttonPin);
-    static bool buttonIsRegistered = false; // Tracks if the long press was already handled
-
+    int readingActive = digitalRead(buttonPin);
+    int readingSport = digitalRead(sportPin);
+    static bool buttonActiveRegistered = false; // Tracks if the long press was already handled
+    static bool buttonSportRegistered = false; 
     // 1. Debounce Logic: Reset timer if the raw reading changes
-    if (reading != lastButtonState) {
-        lastDebounceTime = millis();
+    if (readingActive != lastButtonActiveState) {
+        lastDebounceTimeActive = millis();
+    }
+
+    if (readingSport != lastButtonSportState) {
+        lastDebounceTimeActive = millis();
     }
 
     // 2. Stable State Check: Check for debounced stability
-    if ((millis() - lastDebounceTime) > debounceDelay) {
+    if ((millis() - lastDebounceTimeActive) > debounceDelay) {
         
         // --- A. If the stable state HAS changed ---
-        if (reading != buttonState) {
+        if (readingActive != buttonActiveState) {
             
             // Update the stable state
-            buttonState = reading;
+            buttonActiveState = readingActive;
             stateChanged = true;
             
-            if (buttonState == LOW) {
+            if (buttonActiveState == LOW) {
                 // Button just became stable LOW (pressed)
                 // START tracking the press duration
-                pressStartTime = millis(); 
+                pressStartTimeActive = millis(); 
                 Serial.println("Button stable LOW. Starting timer.");
             } else {
                 // Button just became stable HIGH (released)
                 Serial.println("Button released.");
                 
                 // Reset the registration flag when released
-                buttonIsRegistered = false; 
+                buttonActiveRegistered = false; 
+            }
+        }
+
+        if (readingSport != buttonSportState) {
+            
+            // Update the stable state
+            buttonSportState = readingSport;
+            stateChanged = true;
+            
+            if (buttonSportState == LOW) {
+                // Button just became stable LOW (pressed)
+                // START tracking the press duration
+                pressStartTimeSport = millis(); 
+                Serial.println("Button SPORT stable LOW. Starting timer.");
+            } else {
+                // Button just became stable HIGH (released)
+                Serial.println("Button SPORT released.");
+                
+                // Reset the registration flag when released
+                buttonSportRegistered = false; 
             }
         }
 
         // --- B. Long Press Check (Only run if button is currently pressed) ---
-        if (buttonState == LOW) {
+        if (buttonActiveState == LOW) {
             
             // Check if the required duration has passed AND the action hasn't run yet
-            if ((millis() - pressStartTime >= LONG_PRESS_DURATION) && !buttonIsRegistered) {
+            if ((millis() - pressStartTimeActive >= LONG_PRESS_DURATION) && !buttonActiveRegistered) {
                 
                 // --- ACTION: Long Press Registered! ---
                 Serial.println("--- Long Press REGISTERED (3+ seconds)! ---");
@@ -71,7 +100,26 @@ bool updateActivateBouton() {
                 activationOn = !activationOn;
                 
                 // 2. Mark the action as done so it doesn't trigger again until released/re-pressed
-                buttonIsRegistered = true; 
+                buttonActiveRegistered = true; 
+                
+                // Note: stateChanged remains false because the physical button state
+                // (LOW) hasn't changed, only the *application* state has changed.
+            }
+        }
+
+        if (buttonSportState == LOW) {
+            
+            // Check if the required duration has passed AND the action hasn't run yet
+            if ((millis() - pressStartTimeSport >= LONG_PRESS_DURATION) && !buttonSportRegistered) {
+                
+                // --- ACTION: Long Press Registered! ---
+                Serial.println("--- SPORT Long Press REGISTERED (3+ seconds)! ---");
+                
+                // 1. Toggle the application variable
+                sportOn = !sportOn;
+                
+                // 2. Mark the action as done so it doesn't trigger again until released/re-pressed
+                buttonSportRegistered = true; 
                 
                 // Note: stateChanged remains false because the physical button state
                 // (LOW) hasn't changed, only the *application* state has changed.
@@ -80,7 +128,10 @@ bool updateActivateBouton() {
     }
 
     // 3. Save the current raw reading for the next loop iteration
-    lastButtonState = reading;
+    lastButtonActiveState = readingActive;
+    lastButtonSportState = readingSport;
     delay(50);
     return stateChanged;
 }
+
+

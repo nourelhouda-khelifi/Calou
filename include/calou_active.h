@@ -11,9 +11,10 @@ const int sportPin = 13;
 // The 'extern' keyword declares the existence of the variable, telling 
 // the compiler it will be defined in a different source file (.ino or .cpp).
 // Existing State tracking variables
-extern int buttonState;        
-extern unsigned long lastDebounceTime;
-extern unsigned long pressStartTime; 
+extern int buttonActiveState;        
+extern unsigned long lastDebounceTimeActive;
+extern unsigned long pressStartTimeActive; 
+
 // 🆕 New variable to track the start of the press
 
 // Configuration
@@ -21,6 +22,7 @@ extern unsigned long pressStartTime;
 
 // The main toggle state variable
 extern bool activationOn;
+extern bool sportOn;
 
 bool updateActivateBouton();
 boolean activerCalou();
