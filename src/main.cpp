@@ -3,21 +3,17 @@
 #include <SeeedOLED.h>
 
 
-#include "../include/sensor.h"
-#include "../include/bpm.h"
-#include "../include/analysis.h"
-#include "../include/display_accueil.h"
-#include "../include/display_alerte.h"
-#include "../include/display_exercice.h"
-#include "../include/sophro_exercices.h"
-#include "../include/calou_active.h"
+#include "./detection/sensor.h"
+#include "./detection/bpm.h"
+#include "./detection/analysis.h"
+#include "./display/display_accueil.h"
+#include "./display/sophro_exercices.h"
+#include "./display/calou_active.h"
 
 
 bool affichageAccueil = false;
 unsigned long startWindow = 0;
 
-
-// 1. GLOBAL VARIABLES: These MUST be defined outside of any function
 
 void setup() {
     Serial.begin(9600);
@@ -32,15 +28,6 @@ void setup() {
     activationOn = false;
     sportOn = false;
 }
-
-// Assurez-vous que ces variables sont globales/externes et définies.
-// extern bool activationOn;
-// extern int currentDisplayState; // 1: Active, 2: Deactive
-// extern bool affichageAccueil;
-// extern unsigned long startWindow; 
-// extern const int buttonPin;
-// extern const unsigned long debounceDelay; 
-// ... etc.
 
 void loop() {
     // 1. GESTION DU BOUTON (Doit toujours s'exécuter)

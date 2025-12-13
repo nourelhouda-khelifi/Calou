@@ -1,4 +1,4 @@
-#include "../include/bitmap.h"
+#include "./bitmap.h"
 
 const int TAILLE_BITMAP = 1024; //128*64/8
 

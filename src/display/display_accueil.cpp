@@ -1,7 +1,9 @@
 #include <SeeedOLED.h>
-#include "../../include/display_accueil.h"
 #include <Arduino.h>
-#include "../../include/calou_active.h"
+#include "display_accueil.h"
+#include "calou_active.h"
+
+//TO BE REMOVED LATER
 
 // ========================================
 // Écran d'accueil pour bracelet anti-stress

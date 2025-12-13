@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include <SeeedOLED.h>
 
+void displayAlerte();
 bool exercice_sophro_normal();
 bool inspirer_cycle();
 bool tenir_cycle(int nb_ms);
