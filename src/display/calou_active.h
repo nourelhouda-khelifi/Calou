@@ -2,6 +2,11 @@
 #define CALOU_ACTIVE_H
 
 #include <Arduino.h>
+#include "display_accueil.h"
+#include "sophro_exercices.h"
+#include "./detection/sensor.h"
+#include "./detection/bpm.h"
+#include "./detection/analysis.h"
 
 const int buttonPin = 12;
 const int sportPin = 13;

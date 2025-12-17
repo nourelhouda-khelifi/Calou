@@ -3,6 +3,11 @@
 
 #include <Wire.h>
 #include <SeeedOLED.h>
+#include <Arduino.h>
+
+#include "bitmap.h"
+#include "display_accueil.h"
+#include "calou_active.h"
 
 void displayAlerte();
 bool exercice_sophro_normal();

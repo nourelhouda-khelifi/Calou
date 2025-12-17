@@ -1,202 +1,151 @@
-#include <Arduino.h>
-#include <SeeedOLED.h>
 #include "sophro_exercices.h"
-#include "bitmap.h"
-#include "display_accueil.h"
-#include "calou_active.h"
 
-
-// Avertissement de début d'exercice
+/**
+ * Affiche un message d'urgence si le stress est détecté.
+ */
 void displayAlerte() {
     SeeedOled.clearDisplay();
     SeeedOled.setTextXY(0,0);
     SeeedOled.putString("Vous etes stress!");
     SeeedOled.setTextXY(1,0);
     SeeedOled.putString("Respirons ensemble!");
-    // Animation cercle clignotant
+    
+    // Animation visuelle simple (points verticaux)
     for(int i=0;i<3;i++){
         SeeedOled.setTextXY(3+i,2);
         SeeedOled.putString("O");
     }
 }
 
-
-
-// Forward declarations
-bool inspirer_cycle();
-bool tenir_cycle(int nb_ms);
-bool expirer_cycle();
-bool verifierActivation();
-bool cycle(int tenir_secondes);
-
-// ========================================
-// Affichage initial
-// ========================================
-void commencer_affichage() {
-    SeeedOled.clearDisplay();
-    SeeedOled.setNormalDisplay();
-    SeeedOled.setPageMode();
-}
-
-// ========================================
-// Countdown avant l'exercice : 3-2-1
-// ========================================
+// --- GESTION DU COMPTE À REBOURS ---
 void afficher_countdown() {
     commencer_affichage();
     
-    // Titre
+    // On affiche le titre de l'exercice
     SeeedOled.setTextXY(1, 2);
     SeeedOled.putString("EXERCICE");
     SeeedOled.setTextXY(2, 3);
     SeeedOled.putString("SORPHO");
-    if(!verifierActivation()){
-        return;
-    }
     
-    // Affichage du compte à rebours 3-2-1
+    if(!verifierActivation()) return; // Sécurité : si on éteint le bracelet, on sort
+    if(sportOn) {return; }          // Si le mode sport est actif, on ne fait pas le countdown
+    
+    // Boucle de décompte : 3, 2, 1
     for(int i = 3; i >= 1; i--) {
-        if(!verifierActivation()){
-            return;
-        }
-        commencer_affichage();
+        if(!verifierActivation()) return;
+        if(sportOn) { return; }    
         
+        commencer_affichage();
         SeeedOled.setTextXY(1, 2);
         SeeedOled.putString("EXERCICE");
         SeeedOled.setTextXY(2, 3);
         SeeedOled.putString("SORPHO");
         
         SeeedOled.setTextXY(4, 6);
-        SeeedOled.putNumber(i);
+        SeeedOled.putNumber(i); // Affiche le chiffre actuel
         
-        delay(1000);
+        delay(1000); // Attend 1 seconde entre chaque chiffre
     }
     
-    // Message "C'est parti!"
     commencer_affichage();
     SeeedOled.setTextXY(2, 3);
     SeeedOled.putString("C'est parti !");
     delay(1500);
 }
 
-// ========================================
-// Exercice Sorpho Normal
-// ========================================
+// --- LOGIQUE DE L'EXERCICE ---
+/**
+ * Enchaîne 5 cycles de respiration avec une difficulté croissante.
+ */
 bool exercice_sophro_normal() {
-    int tenir_secondes = 1000;
+    int tenir_secondes = 1000; // Durée d'apnée initiale (1s)
+    
     for(int i = 0; i < 5; i++){
+        // Si un cycle est interrompu par l'utilisateur, on arrête tout
         if(!cycle(tenir_secondes)){
             return false;
         }
+        // On augmente la difficulté : on demande de tenir l'air plus longtemps à chaque fois
         if(i!=3){
-            tenir_secondes+=1000;
+            tenir_secondes += 1000;
         }
     }
     return true;
 }
 
-// ========================================
-// 5 cycles avec durées croissantes
-// ========================================
-
+/**
+ * Définit un cycle complet : Inspiration -> Rétention -> Expiration
+ */
 bool cycle(int tenir_secondes){
     if (inspirer_cycle() && tenir_cycle(tenir_secondes) && expirer_cycle()) {
         return true; 
-    } else {
-        return false; 
     }
+    return false; 
 }
 
+// --- PHASES DE RESPIRATION ANIMÉES ---
 
-// ========================================
-// Inspiration - Bulle grandit progressivement
-// ========================================
 bool inspirer_cycle() {
+    // Liste des images du ballon qui gonfle
     static const unsigned char* const frames[] = {
-        ballon_etat1,
-        ballon_etat2,
-        ballon_etat3,
-        ballon_etat4,
-        ballon_etat5,
-        ballon_etat6
+        ballon_etat1, ballon_etat2, ballon_etat3, 
+        ballon_etat4, ballon_etat5, ballon_etat6
     };
 
-    const uint16_t frameDelay[6] = {500, 500, 500, 500, 500, 500};
-    const uint8_t frameCount = sizeof(frames) / sizeof(frames[0]);
-
     commencer_affichage();
-    SeeedOled.setTextXY(7, 5);
-    SeeedOled.putString("Inspire");
-
-    for (uint8_t i = 0; i < frameCount; i++) {
-        if(!verifierActivation()){
-            return false;
-        }
+    for (uint8_t i = 0; i < 6; i++) {
+        if(!verifierActivation()) return false;
+        
         SeeedOled.setTextXY(0, 0);
-        SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP);
+        SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP); // Dessine le ballon
         SeeedOled.setTextXY(7, 5);
         SeeedOled.putString("Inspire");
-        delay(frameDelay[i]);
+        delay(500); // Vitesse de gonflement
     }
     return true;
 }
 
-// ========================================
-// Pause avec bulle au maximum
-// ========================================
 bool tenir_cycle(int nb_ms) {
     commencer_affichage();
     SeeedOled.setTextXY(0, 0);
-    SeeedOled.drawBitmap((unsigned char*)ballon_etat7, TAILLE_BITMAP);
+    SeeedOled.drawBitmap((unsigned char*)ballon_etat7, TAILLE_BITMAP); // Ballon plein
     SeeedOled.setTextXY(7, 5);
     SeeedOled.putString("Tiens");
-    if(!verifierActivation()){
-        return false;
-    }
-    delay(nb_ms);
+    
+    if(!verifierActivation()) return false;
+    delay(nb_ms); // Temps d'apnée (bloquer la respiration)
     return true;
 }
 
-// ========================================
-// Expiration - Bulle rétrécit progressivement
-// ========================================
 bool expirer_cycle() {
+    // Liste des images du ballon qui se dégonfle (ordre inverse)
     static const unsigned char* const frames[] = {
-        ballon_etat6,
-        ballon_etat5,
-        ballon_etat4,
-        ballon_etat3,
-        ballon_etat2,
-        ballon_etat1
+        ballon_etat6, ballon_etat5, ballon_etat4, 
+        ballon_etat3, ballon_etat2, ballon_etat1
     };
 
-    const uint8_t frameCount = sizeof(frames) / sizeof(frames[0]);
-    const uint16_t frameDelay[6] = {1000, 1000, 1000, 1000, 1000, 1000};
-
     commencer_affichage();
-    SeeedOled.setTextXY(7, 5);
-    SeeedOled.putString("Souffle");
-
-    for (uint8_t i = 0; i < frameCount; i++) {
-        if(!verifierActivation()){
-            return false;
-        }
+    for (uint8_t i = 0; i < 6; i++) {
+        if(!verifierActivation()) return false;
+        
         SeeedOled.setTextXY(0, 0);
         SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP);
         SeeedOled.setTextXY(7, 5);
         SeeedOled.putString("Souffle");
-        delay(frameDelay[i]);
+        delay(1000); // L'expiration est plus longue que l'inspiration (relaxant)
     }
 
-    // "Bravo!" après chaque cycle
     commencer_affichage();
-    SeeedOled.setTextXY(0, 0);
-    SeeedOled.drawBitmap((unsigned char*)ballon_etat1, TAILLE_BITMAP);
     SeeedOled.setTextXY(7, 5);
     SeeedOled.putString("Bravo!");
     delay(2000);
     return true;
 }
 
+/**
+ * Vérifie à chaque étape si le bouton ON/OFF a été basculé.
+ * Permet de quitter l'exercice instantanément.
+ */
 bool verifierActivation(){
     updateActivateBouton();
     if(!activationOn){
