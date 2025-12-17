@@ -1,8 +1,8 @@
-#include "../include/analysis.h"
-#include "../include/bpm.h"
+#include "analysis.h"
+#include "bpm.h"
 #include <Arduino.h>
-#include "../include/display_accueil.h"
-#include "../include/calou_active.h"
+#include "./display/display_accueil.h"
+#include "./display/calou_active.h"
 #include <SeeedOLED.h>
 
 const char* analyserStress() {
@@ -16,6 +16,7 @@ const char* analyserStress() {
 
     Serial.print("Moyenne BPM sur 30s : ");
     Serial.println(moyenne);
+    bpm_affiche = int(moyenne);
 
     const char* etat;
 

@@ -3,8 +3,6 @@
 #include "./detection/bpm.h"
 #include "./detection/analysis.h"
 #include "display_accueil.h"
-#include "display_alerte.h"
-#include "display_exercice.h"
 #include "sophro_exercices.h"
 
 const int buttonPin = 12;        

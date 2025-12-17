@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include "display_accueil.h"
 #include "calou_active.h"
-
+#include "bitmap.h"
 //TO BE REMOVED LATER
 
 // ========================================
@@ -79,56 +79,25 @@ void displayAccueil() {
         SeeedOled.putString("  . . .  ");
     }
 }
-void displayactivate(){
-    // Check if this is the first time in this state since the last clear
-    if (currentDisplayState == 1) { 
-        SeeedOled.setTextXY(2, 0);
-        SeeedOled.putString("Display Activate");
-        // We do *not* set a static flag here, the global currentDisplayState handles it.
-    }
-    
-    // This line updates continuously, regardless of the state change
-    SeeedOled.setTextXY(3, 0);
-    const char* stateString = activationOn ? "ON" : "OFF";
-    SeeedOled.putString(stateString); 
-}
+// --- ANIMATION FUNCTION ---
+
 void displaydeactivate(){
-    // Check if this is the first time in this state since the last clear
-    if (currentDisplayState == 2) { 
-        SeeedOled.setTextXY(2, 0);
-        SeeedOled.putString("Dis Deactivate");
-    }
-    
-    // This line updates continuously, regardless of the state change
-    SeeedOled.setTextXY(3, 0);
-    const char* stateString = activationOn ? "ON" : "OFF";
-    SeeedOled.putString(stateString);
+    SeeedOled.clearDisplay();
 }
 
 void displaySport(){
     // Check if this is the first time in this state since the last clear
     if (currentSportState == 1) { 
         SeeedOled.setTextXY(0, 0);
-        SeeedOled.putString("MODE SPORT");
-        // We do *not* set a static flag here, the global currentDisplayState handles it.
+        SeeedOled.drawBitmap((unsigned char*)naruto_1, TAILLE_BITMAP);
+        delay(10);
+        SeeedOled.drawBitmap((unsigned char*)naruto_2, TAILLE_BITMAP);
+        delay(10);
+        SeeedOled.drawBitmap((unsigned char*)naruto_3, TAILLE_BITMAP);
+        delay(10);
     }
-    
-    // This line updates continuously, regardless of the state change
-    SeeedOled.setTextXY(1, 0);
-    const char* stateString = sportOn ? "ON" : "OFF";
-    SeeedOled.putString(stateString); 
 }
 
 void displayNotSport(){
-    // Check if this is the first time in this state since the last clear
-    if (currentSportState == 2) { 
-        SeeedOled.setTextXY(5, 0);
-        SeeedOled.putString("NOT SPORT");
-        // We do *not* set a static flag here, the global currentDisplayState handles it.
-    }
     
-    // This line updates continuously, regardless of the state change
-    SeeedOled.setTextXY(6, 0);
-    const char* stateString = sportOn ? "ON" : "OFF";
-    SeeedOled.putString(stateString); 
 }

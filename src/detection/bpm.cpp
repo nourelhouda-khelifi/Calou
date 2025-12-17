@@ -1,6 +1,6 @@
-#include "../include/bpm.h"
-#include "../include/display_accueil.h"
-#include "../include/calou_active.h"
+#include "bpm.h"
+#include "./display/display_accueil.h"
+#include "./display/calou_active.h"
 #include <Arduino.h>
 #include <SeeedOLED.h>
 
@@ -15,7 +15,7 @@ float baseline = 0;
 int bpm_values[200];
 int bpm_index = 0;
 
-// 🔥 VERSION CORRIGÉE : detecterBPM retourne maintenant un int
+
 int detecterBPM(int valeur) {
     updateActivateBouton();
     if(!activationOn){

@@ -5,5 +5,5 @@
 
 const char* analyserStress(); 
 void resetAnalyse();
-
+extern int bpm_affiche;
 #endif
