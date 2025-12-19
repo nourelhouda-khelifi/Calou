@@ -1,9 +1,5 @@
 #include "calou_active.h"
 
-// --- CONFIGURATION DES BROCHES ---
-const int buttonPin = 12;        // Bouton d'activation générale
-const int sportPin = 13;         // Bouton du mode sport
-
 // --- PARAMÈTRES TEMPORELS ---
 const unsigned long debounceDelay = 50;         // Temps de stabilisation (anti-rebond) en ms
 const unsigned long LONG_PRESS_DURATION = 3000; // Seuil pour l'appui long (3 secondes)

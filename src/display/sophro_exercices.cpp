@@ -17,6 +17,15 @@ void displayAlerte() {
     }
 }
 
+
+// RESET DE L'AFFICHAGE
+void commencer_affichage() {
+    SeeedOled.clearDisplay();
+    SeeedOled.setNormalDisplay();
+    SeeedOled.setPageMode();
+}
+
+
 // --- GESTION DU COMPTE À REBOURS ---
 void afficher_countdown() {
     commencer_affichage();
@@ -94,7 +103,7 @@ bool inspirer_cycle() {
 
     commencer_affichage();
     for (uint8_t i = 0; i < 6; i++) {
-        if(!verifierActivation()) return false;
+        if(!verifierActivation() || sportOn) return false;
         
         SeeedOled.setTextXY(0, 0);
         SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP); // Dessine le ballon
@@ -112,7 +121,7 @@ bool tenir_cycle(int nb_ms) {
     SeeedOled.setTextXY(7, 5);
     SeeedOled.putString("Tiens");
     
-    if(!verifierActivation()) return false;
+    if(!verifierActivation() || sportOn) return false;
     delay(nb_ms); // Temps d'apnée (bloquer la respiration)
     return true;
 }
@@ -126,7 +135,7 @@ bool expirer_cycle() {
 
     commencer_affichage();
     for (uint8_t i = 0; i < 6; i++) {
-        if(!verifierActivation()) return false;
+        if(!verifierActivation() || sportOn) return false;
         
         SeeedOled.setTextXY(0, 0);
         SeeedOled.drawBitmap((unsigned char*)frames[i], TAILLE_BITMAP);

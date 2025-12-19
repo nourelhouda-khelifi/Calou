@@ -8,8 +8,9 @@
 #include "./detection/bpm.h"
 #include "./detection/analysis.h"
 
-const int buttonPin = 12;
-const int sportPin = 13;
+// --- CONFIGURATION DES BROCHES ---
+const int buttonPin = 12;        // Bouton d'activation générale
+const int sportPin = 13;         // Bouton du mode sport
 extern int buttonActiveState;        
 extern unsigned long lastDebounceTimeActive;
 extern unsigned long pressStartTimeActive; 
